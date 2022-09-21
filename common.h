@@ -7,16 +7,19 @@
 #include <SheetsLogger.h>
 
 #define LED_BUILTIN 2
-
 #define uS_TO_M_FACTOR 60000000ULL
 #define TIME_TO_WAKE 30 // minutes to sleep between scans
+#define NTP_SERVER "pool.ntp.org"
+#define PST_OFFSET -28800
+#define DAYLIGHT_SAVINGS_OFFSET 3600
+
 
 // Logging
 #define HK_DEBUG_NONE -1
 #define HK_DEBUG_ERROR 0
 #define HK_DEBUG_INFO 1
 
-#define HK_DEBUG HK_DEBUG_INFO
+#define HK_DEBUG HK_DEBUG_ERROR
 
 #define FREE_HEAP() esp_get_free_heap_size() * 0.001f
 
