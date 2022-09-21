@@ -4,6 +4,7 @@
 
 #include "secrets.h"
 #include <Arduino.h>
+#include <SheetsLogger.h>
 
 #define LED_BUILTIN 2
 
@@ -20,13 +21,13 @@
 #define FREE_HEAP() esp_get_free_heap_size() * 0.001f
 
 #if HK_DEBUG >= HK_DEBUG_ERROR
-    #define HK_ERROR_LINE(message, ...) printf("ERR [%7d][%.2fkb] !!!Sheets Logger!!!: " message "\n", millis(), FREE_HEAP(), ##__VA_ARGS__)
+    #define HK_ERROR_LINE(message, ...) sl_printf(SHEETS_URL, "Homekit Spoke 01", "ERR [%7d][%.2fkb] !!!Homekit Spoke 01!!!: " message "\n", millis(), FREE_HEAP(), ##__VA_ARGS__)
 #else
     #define HK_ERROR_LINE(message, ...)
 #endif
 
 #if HK_DEBUG >= HK_DEBUG_INFO
-    #define HK_INFO_LINE(message, ...) printf(">>> [%7d][%.2fkb] Sheets Logger: " message "\n", millis(), FREE_HEAP(), ##__VA_ARGS__)
+    #define HK_INFO_LINE(message, ...) printf(">>> [%7d][%.2fkb] Homekit Spoke 01: " message "\n", millis(), FREE_HEAP(), ##__VA_ARGS__)
 #else
     #define HK_INFO_LINE(message, ...)
 #endif
