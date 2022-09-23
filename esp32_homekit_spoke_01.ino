@@ -212,6 +212,7 @@ void loop() {
 
 			HK_INFO_LINE("Going to sleep for %i minutes.", TIME_TO_WAKE);
 			digitalWrite(LED_BUILTIN, LOW); // clear LED status
+			webSocket.disconnect();
 			#if HK_DEBUG > HK_DEBUG_NONE
 				Serial.flush();
 			#endif
