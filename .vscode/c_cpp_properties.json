@@ -217,7 +217,7 @@
                 "C:\\Users\\cosorgen\\AppData\\Local\\Arduino15\\packages\\esp32\\hardware\\esp32\\2.0.5\\variants\\esp32da",
                 "D:\\Dev\\Arduino\\libraries\\sheets_logger_esp\\src",
                 "C:\\Users\\cosorgen\\AppData\\Local\\Arduino15\\packages\\esp32\\hardware\\esp32\\2.0.5\\libraries\\WiFi\\src",
-                "D:\\Dev\\Arduino\\libraries\\arduinoWebSockets-2.3.5\\src",
+                "D:\\Dev\\Arduino\\libraries\\arduinoWebSockets\\src",
                 "C:\\Users\\cosorgen\\AppData\\Local\\Arduino15\\packages\\esp32\\hardware\\esp32\\2.0.5\\libraries\\WiFiClientSecure\\src",
                 "C:\\Users\\cosorgen\\AppData\\Local\\Arduino15\\packages\\esp32\\hardware\\esp32\\2.0.5\\libraries\\BLE\\src",
                 "C:\\Users\\cosorgen\\AppData\\Local\\Arduino15\\packages\\esp32\\hardware\\esp32\\2.0.5\\libraries\\HTTPClient\\src",

@@ -12,7 +12,7 @@
 #define NTP_SERVER "pool.ntp.org"
 #define PST_OFFSET -28800
 #define DAYLIGHT_SAVINGS_OFFSET 3600
-#define SLEEP_DELAY 10000 // 10 seconds
+#define SLEEP_DELAY 30000 // 30 seconds
 #define BLE_SCAN_TIME 90 // seconds
 
 // Logging
