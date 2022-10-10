@@ -6,13 +6,10 @@
 #include <Arduino.h>
 #include <SheetsLogger.h>
 
-#define LED_BUILTIN 2
+#define LED_PIN 7
 #define uS_TO_M_FACTOR 60000000ULL
 #define TIME_TO_WAKE 30 // minutes to sleep between scans
-#define NTP_SERVER "pool.ntp.org"
-#define PST_OFFSET -28800
-#define DAYLIGHT_SAVINGS_OFFSET 3600
-#define SLEEP_DELAY 30000 // 30 seconds
+#define SLEEP_DELAY 15000 // 15 seconds
 #define BLE_SCAN_TIME 90 // seconds
 
 // Logging
@@ -20,7 +17,7 @@
 #define HK_DEBUG_ERROR 0
 #define HK_DEBUG_INFO 1
 
-#define HK_DEBUG HK_DEBUG_ERROR
+#define HK_DEBUG HK_DEBUG_INFO
 
 #define FREE_HEAP() esp_get_free_heap_size() * 0.001f
 
