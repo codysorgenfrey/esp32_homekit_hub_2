@@ -71,7 +71,7 @@ void setup() {
     }
 	HK_INFO_LINE("Connected.");
 
-    HK_INFO_LINE("Setting up websocket connection to hub.");
+	HK_INFO_LINE("Setting up websocket connection to hub.");
 	webSocket.begin(WEBSOCKET_IP, 81, "/");
 	webSocket.setAuthorization(WEBSOCKET_USER, WEBSOCKET_PASS);
 	webSocket.onEvent(webSocketEvent);
@@ -136,6 +136,7 @@ void loop() {
 							message += "'}";
 						if (!webSocket.sendTXT(message)) HK_ERROR_LINE("Error sending message: %s", message);
 						else HK_INFO_LINE("Sent %s.", message.c_str());
+						sl_printf(SHEETS_URL, "Homekit Spoke 01", "Garage temp: %0.2f", inkbirdTemp);
 					} else {
 						HK_ERROR_LINE("Websocket not connected.");
 					}

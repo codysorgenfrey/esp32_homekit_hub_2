@@ -1,2 +1,4 @@
 build
 secrets.h
+debug*
+esp32c3.svd
