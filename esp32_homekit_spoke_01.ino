@@ -136,7 +136,6 @@ void loop() {
 							message += "'}";
 						if (!webSocket.sendTXT(message)) HK_ERROR_LINE("Error sending message: %s", message);
 						else HK_INFO_LINE("Sent %s.", message.c_str());
-						sl_printf(SHEETS_URL, "Homekit Spoke 01", "Garage temp: %0.2f", inkbirdTemp);
 					} else {
 						HK_ERROR_LINE("Websocket not connected.");
 					}
