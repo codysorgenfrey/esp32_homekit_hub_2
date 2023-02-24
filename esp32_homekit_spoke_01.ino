@@ -56,7 +56,7 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
 }
 
 void setup() {
-	#if HK_DEBUG > HK_DEBUG_NONE
+	#if HK_DEBUG > HK_DEBUG_ERROR
 		Serial.begin(115200);
 		while (!Serial) { ; } // wait for Serial
 	#endif
