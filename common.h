@@ -8,10 +8,6 @@
 
 #define LED_PIN 7
 #define uS_TO_M_FACTOR 60000000ULL
-#define RESPONSE_COMMAND "response"
-
-// Hub
-#define HUB_RESPONSE_TIMEOUT 5000 // 5 seconds
 
 // Inkbird BLE
 #define IB_DEVICE_ID "IBS-TH2"

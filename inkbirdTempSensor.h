@@ -7,7 +7,7 @@
 #include <BLEUtils.h>
 #include <BLEScan.h>
 #include <BLEAdvertisedDevice.h>
-#include "remoteHomekitDevice.h"
+#include <HomekitRemoteDevice.h>
 #include <WebSocketsClient.h>
 #include <ArduinoJson.h>
 
@@ -30,11 +30,11 @@ public:
   }
 };
 
-class InkbirdTempSensor : public RemoteHomekitDevice {
+class InkbirdTempSensor : public HomekitRemoteDevice {
   BLEScan* pBLEScan;
   InkbirdTempGetter *tempGetter;
   WebSocketsClient *webSocket;
-  unsigned long lastScan = -1 * IB_SCAN_INTERVAL;
+  unsigned long lastScan = -60000; // wait 1 minute before first scan
   bool scanning = false;
 
   void startScan() {
@@ -63,11 +63,11 @@ class InkbirdTempSensor : public RemoteHomekitDevice {
     doc["device"] = IB_DEVICE_ID;
     doc["command"] = IB_COMMAND_UPDATE_TEMP;
     doc["payload"] = tempGetter->inkbirdTemp;
-    sendHomekitMessage(doc);
+    sendHKRMessage(doc);
   }
 
 public:
-  InkbirdTempSensor(WebSocketsClient *ws) : RemoteHomekitDevice(ws) {
+  InkbirdTempSensor(WebSocketsClient *ws) : HomekitRemoteDevice(ws, IB_DEVICE_ID) {
     HK_INFO_LINE("Created InkbirdTempSensor");
     BLEDevice::init("");
   }
@@ -92,15 +92,27 @@ public:
       }
     }
 
-    listenForHomekitResponse();
+    listenForHKRResponse();
   }
 
-  void handleCommand(const JsonDocument &doc) {
+  void handleHKRCommand(const JsonDocument &doc) {
+    bool success = false;
     const char *command = doc["command"].as<const char *>();
+
     if (strcmp(command, IB_COMMAND_GET_TEMP) == 0) {
       HK_INFO_LINE("Received command to get temp.");
       if (!scanning) startScan();
+      success = true;
     }
+
+    
+    StaticJsonDocument<92> resDoc;
+    resDoc["device"] = IB_DEVICE_ID;
+    resDoc["command"] = HKR_RESPONSE_COMMAND;
+    resDoc["payload"] = success;
+    sendHKRMessage(resDoc, false);
+
+    if (!success) HK_ERROR_LINE("Error handling temerature sensor command %s.", command);
   }
 };
 

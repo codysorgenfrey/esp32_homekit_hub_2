@@ -37,7 +37,7 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
 				}
 				const char *device = doc["device"].as<const char *>();
 				if (strcmp(device, IB_DEVICE_ID) == 0) {
-					tempSensor->homekitMessageRecieved(doc);
+					tempSensor->HKRMessageRecieved(doc);
 				}
 			}
 			break;

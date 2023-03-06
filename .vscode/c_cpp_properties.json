@@ -220,6 +220,7 @@
                 "C:\\Users\\cosorgen\\AppData\\Local\\Arduino15\\packages\\esp32\\hardware\\esp32\\2.0.6\\libraries\\WiFiClientSecure\\src",
                 "C:\\Users\\cosorgen\\Documents\\Arduino\\libraries\\Adafruit_NeoPixel",
                 "C:\\Users\\cosorgen\\AppData\\Local\\Arduino15\\packages\\esp32\\hardware\\esp32\\2.0.6\\libraries\\BLE\\src",
+                "C:\\Users\\cosorgen\\Documents\\Arduino\\libraries\\esp32_homekit_remote\\src",
                 "C:\\Users\\cosorgen\\Documents\\Arduino\\libraries\\ArduinoJson\\src",
                 "C:\\Users\\cosorgen\\AppData\\Local\\Arduino15\\packages\\esp32\\hardware\\esp32\\2.0.6\\libraries\\HTTPClient\\src",
                 "c:\\users\\cosorgen\\appdata\\local\\arduino15\\packages\\esp32\\tools\\riscv32-esp-elf-gcc\\gcc8_4_0-esp-2021r2-patch5\\riscv32-esp-elf\\include\\c++\\8.4.0",
