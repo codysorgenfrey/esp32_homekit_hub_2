@@ -9,14 +9,17 @@
 #define RED_COLOR pixels.gamma32(pixels.ColorHSV(40, 255, 128))
 
 WebSocketsClient webSocket;
-InkbirdTempSensor *tempSensor;
+InkbirdTempSensor *tempSensor = NULL;
 Adafruit_NeoPixel pixels(1, LED_PIN, NEO_GRB);
 
 void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
 	switch(type) {
 		case WStype_DISCONNECTED:
 			HK_INFO_LINE("Websocket: disconnected.");
-			delete tempSensor;
+			if (tempSensor != NULL) {
+				delete tempSensor;
+				tempSensor = NULL;
+			}
 			pixels.setPixelColor(0, RED_COLOR);
 			pixels.show();
 			break;
