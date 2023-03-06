@@ -8,16 +8,24 @@
 
 #define LED_PIN 7
 #define uS_TO_M_FACTOR 60000000ULL
-#define TIME_TO_WAKE 30 // minutes to sleep between scans
-#define SLEEP_DELAY 15000 // 15 seconds
-#define BLE_SCAN_TIME 90 // seconds
+#define RESPONSE_COMMAND "response"
+
+// Hub
+#define HUB_RESPONSE_TIMEOUT 5000 // 5 seconds
+
+// Inkbird BLE
+#define IB_DEVICE_ID "IBS-TH2"
+#define IB_COMMAND_UPDATE_TEMP "update_temp"
+#define IB_COMMAND_GET_TEMP "get_temp"
+#define IB_SCAN_INTERVAL 1800000 // 30 minutes
+#define IB_SCAN_TIME 90 // 90 seconds
 
 // Logging
 #define HK_DEBUG_NONE -1
 #define HK_DEBUG_ERROR 0
 #define HK_DEBUG_INFO 1
 
-#define HK_DEBUG HK_DEBUG_ERROR
+#define HK_DEBUG HK_DEBUG_INFO
 
 #define FREE_HEAP() esp_get_free_heap_size() * 0.001f
 
