@@ -26,23 +26,12 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
 		case WStype_CONNECTED:
 			HK_INFO_LINE("Websocket: connected to url: %s", payload);
 			tempSensor = new InkbirdTempSensor(&webSocket);
-			pixels.setPixelColor(0, WHITE_COLOR);
+			pixels.clear();
 			pixels.show();
 			break;
 		case WStype_TEXT:
 			HK_INFO_LINE("Websocket got text: %s", payload);
-			if (strncmp((const char *)payload, "{", 1) == 0) {
-				StaticJsonDocument<256> doc;
-				DeserializationError err = deserializeJson(doc, payload);
-				if (err) {
-					HK_ERROR_LINE("Error parsing JSON: %s", err.c_str());
-					return;
-				}
-				const char *device = doc[HKR_DEVICE].as<const char *>();
-				if (strcmp(device, IB_DEVICE_ID) == 0) {
-					tempSensor->HKRMessageRecieved(doc);
-				}
-			}
+			tempSensor->HKRWebsocketEvent(0, payload);
 			break;
 		case WStype_BIN:
 		case WStype_ERROR:			
@@ -78,6 +67,8 @@ void setup() {
 	webSocket.onEvent(webSocketEvent);
 	webSocket.setReconnectInterval(5000);
 	webSocket.enableHeartbeat(60000, 3000, 2);
+
+	sl_printf(SHEETS_URL, "Homekit Spoke 01", "Rebooting...\n");
 }
 
 void loop() {

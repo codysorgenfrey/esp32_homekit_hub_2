@@ -59,11 +59,9 @@ class InkbirdTempSensor : public HomekitRemoteDevice {
 
   void updateHomekitTemp() {
     HK_INFO_LINE("Reporting Inkbird temp: %.02f.", tempGetter->inkbirdTemp);
-    StaticJsonDocument<92> doc;
-    doc[HKR_DEVICE] = IB_DEVICE_ID;
-    doc[HKR_COMMAND] = IB_COMMAND_UPDATE_TEMP;
-    doc[HKR_PAYLOAD] = tempGetter->inkbirdTemp;
-    sendHKRMessage(doc, true , [](bool success) {
+    JsonVariant payload;
+    payload.set(tempGetter->inkbirdTemp);
+    sendHKRMessage(IB_COMMAND_UPDATE_TEMP, payload, true , [](bool success) {
       if (success) HK_INFO_LINE("Successfully sent temp to hub through HKR.");
       else HK_ERROR_LINE("Error sending temp to hub through HKR.");
     });
@@ -98,9 +96,8 @@ public:
     listenForHKRResponse();
   }
 
-  void handleHKRCommand(const JsonDocument &doc) {
+  void handleHKRCommand(const char *command, const JsonVariant &payload) {
     bool success = false;
-    const char *command = doc["command"].as<const char *>();
 
     if (strcmp(command, IB_COMMAND_GET_TEMP) == 0) {
       HK_INFO_LINE("Received command to get temp.");
@@ -128,6 +125,9 @@ public:
         break;
       case HKR_ERROR_WEBSOCKET_ERROR:
         HK_ERROR_LINE("%s: HKR websocket error.", IB_DEVICE_ID);
+        break;
+      case HKR_ERROR_JSON_DESERIALIZE:
+        HK_ERROR_LINE("%s: HKR json deserialize error.", IB_DEVICE_ID);
         break;
       default:
         HK_ERROR_LINE("%s: HKR unknown error: %i.", IB_DEVICE_ID, err);
