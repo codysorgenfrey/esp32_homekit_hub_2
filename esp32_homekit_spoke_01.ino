@@ -60,6 +60,7 @@ void setup() {
         delay(500);
     }
 	HK_INFO_LINE("Connected.");
+	sl_printf(SHEETS_URL, "Homekit Spoke 01", "Rebooting...\n");
 
 	HK_INFO_LINE("Setting up websocket connection to hub.");
 	webSocket.begin(WEBSOCKET_IP, 81, "/");
@@ -67,8 +68,6 @@ void setup() {
 	webSocket.onEvent(webSocketEvent);
 	webSocket.setReconnectInterval(5000);
 	webSocket.enableHeartbeat(60000, 3000, 2);
-
-	sl_printf(SHEETS_URL, "Homekit Spoke 01", "Rebooting...\n");
 }
 
 void loop() {

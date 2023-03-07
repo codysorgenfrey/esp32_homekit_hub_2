@@ -34,18 +34,19 @@ class InkbirdTempSensor : public HomekitRemoteDevice {
   BLEScan* pBLEScan;
   InkbirdTempGetter *tempGetter;
   WebSocketsClient *webSocket;
-  unsigned long lastScan = -60000; // wait 1 minute before first scan
+  long lastScan = -1 * IB_SCAN_INTERVAL + 60000; // wait 1 minute before first scan
   bool scanning = false;
 
   void startScan() {
     HK_INFO_LINE("Starting BLE scan for %i seconds.", IB_SCAN_TIME);
+    BLEDevice::init("");
     pBLEScan = BLEDevice::getScan(); //create new scan
     tempGetter = new InkbirdTempGetter();
     pBLEScan->setAdvertisedDeviceCallbacks(tempGetter);
     pBLEScan->setActiveScan(true); 
     pBLEScan->setInterval(100);
     pBLEScan->setWindow(99);
-    pBLEScan->start(IB_SCAN_TIME);
+    pBLEScan->start(IB_SCAN_TIME, [](BLEScanResults){}, false);
     scanning = true;
   }
 
@@ -53,31 +54,35 @@ class InkbirdTempSensor : public HomekitRemoteDevice {
     HK_INFO_LINE("Stopping BLE scan.");
     pBLEScan->clearResults();
     delete tempGetter;
+    BLEDevice::deinit(true);
     scanning = false;
     lastScan = millis();
   }
 
   void updateHomekitTemp() {
     HK_INFO_LINE("Reporting Inkbird temp: %.02f.", tempGetter->inkbirdTemp);
-    JsonVariant payload;
+    StaticJsonDocument<8> payload;
     payload.set(tempGetter->inkbirdTemp);
-    sendHKRMessage(IB_COMMAND_UPDATE_TEMP, payload, true , [](bool success) {
-      if (success) HK_INFO_LINE("Successfully sent temp to hub through HKR.");
-      else HK_ERROR_LINE("Error sending temp to hub through HKR.");
+    sendHKRMessage(
+      IB_COMMAND_UPDATE_TEMP,
+      payload.as<JsonVariant>(),
+      true,
+      [](bool success) {
+        if (success) HK_INFO_LINE("Successfully sent temp to hub through HKR.");
+        else HK_ERROR_LINE("Error sending temp to hub through HKR.");
     });
   }
 
 public:
   InkbirdTempSensor(WebSocketsClient *ws) : HomekitRemoteDevice(ws, IB_DEVICE_ID) {
     HK_INFO_LINE("Created InkbirdTempSensor");
-    BLEDevice::init("");
   }
 
   void loop() {
-    unsigned long now = millis();
+    long now = millis();
 
     if (!scanning) {
-      unsigned long diff = max(now, lastScan) - min(now, lastScan);
+      long diff = max(now, lastScan) - min(now, lastScan);
       if (diff >= IB_SCAN_INTERVAL) startScan();
       else if (now % 60000 == 0) {
         HK_INFO_LINE("Waiting %i minutes to scan again.", (IB_SCAN_INTERVAL - diff) / 60000);
