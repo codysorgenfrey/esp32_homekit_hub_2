@@ -38,7 +38,7 @@ void webSocketEvent(WStype_t type, uint8_t * payload, size_t length) {
 					HK_ERROR_LINE("Error parsing JSON: %s", err.c_str());
 					return;
 				}
-				const char *device = doc["device"].as<const char *>();
+				const char *device = doc[HKR_DEVICE].as<const char *>();
 				if (strcmp(device, IB_DEVICE_ID) == 0) {
 					tempSensor->HKRMessageRecieved(doc);
 				}
