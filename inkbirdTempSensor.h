@@ -60,10 +60,13 @@ class InkbirdTempSensor : public HomekitRemoteDevice {
   void updateHomekitTemp() {
     HK_INFO_LINE("Reporting Inkbird temp: %.02f.", tempGetter->inkbirdTemp);
     StaticJsonDocument<92> doc;
-    doc["device"] = IB_DEVICE_ID;
-    doc["command"] = IB_COMMAND_UPDATE_TEMP;
-    doc["payload"] = tempGetter->inkbirdTemp;
-    sendHKRMessage(doc);
+    doc[HKR_DEVICE] = IB_DEVICE_ID;
+    doc[HKR_COMMAND] = IB_COMMAND_UPDATE_TEMP;
+    doc[HKR_PAYLOAD] = tempGetter->inkbirdTemp;
+    sendHKRMessage(doc, true , [](bool success) {
+      if (success) HK_INFO_LINE("Successfully sent temp to hub through HKR.");
+      else HK_ERROR_LINE("Error sending temp to hub through HKR.");
+    });
   }
 
 public:
@@ -105,14 +108,31 @@ public:
       success = true;
     }
 
-    
-    StaticJsonDocument<92> resDoc;
-    resDoc["device"] = IB_DEVICE_ID;
-    resDoc["command"] = HKR_RESPONSE_COMMAND;
-    resDoc["payload"] = success;
-    sendHKRMessage(resDoc, false);
-
+    sendHKRResponse(success);
     if (!success) HK_ERROR_LINE("Error handling temerature sensor command %s.", command);
+  }
+
+  void handleHKRError(HKR_ERROR err) {
+    switch (err) {
+      case HKR_ERROR_CONNECTION_REFUSED:
+        HK_ERROR_LINE("%s: HKR refused connection.", IB_DEVICE_ID);
+        break;
+      case HKR_ERROR_DEVICE_NOT_REGISTERED:
+        HK_ERROR_LINE("%s: HKR device not registered.", IB_DEVICE_ID);
+        break;
+      case HKR_ERROR_TIMEOUT:
+        HK_ERROR_LINE("%s: HKR timeout waiting for response.", IB_DEVICE_ID);
+        break;
+      case HKR_ERROR_UNEXPECTED_RESPONSE:
+        HK_ERROR_LINE("%s: HKR response recieved to no command.", IB_DEVICE_ID);
+        break;
+      case HKR_ERROR_WEBSOCKET_ERROR:
+        HK_ERROR_LINE("%s: HKR websocket error.", IB_DEVICE_ID);
+        break;
+      default:
+        HK_ERROR_LINE("%s: HKR unknown error: %i.", IB_DEVICE_ID, err);
+        break;
+    }
   }
 };
 
