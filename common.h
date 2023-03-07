@@ -21,7 +21,7 @@
 #define HK_DEBUG_ERROR 0
 #define HK_DEBUG_INFO 1
 
-#define HK_DEBUG HK_DEBUG_INFO
+#define HK_DEBUG HK_DEBUG_ERROR
 
 #define FREE_HEAP() esp_get_free_heap_size() * 0.001f
 
