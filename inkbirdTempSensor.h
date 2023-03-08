@@ -24,37 +24,46 @@ public:
       const char *hexData = BLEUtils::buildHexData(nullptr, (uint8_t *)advertisedDevice.getManufacturerData().data(), 2);
       inkbirdTemp = ENDIAN_CHANGE_U16(strtoul(hexData, NULL, 16)) / 100.0f;
       foundTemp = true;
-      HK_INFO_LINE("Found Inkbird Temperature: %.2fF", inkbirdTemp * 1.8f + 32.0f);
-      advertisedDevice.getScan()->stop();
+      HK_INFO_LINE("Callback found Inkbird temperature: %.2fF", inkbirdTemp * 1.8f + 32.0f);
     }
   }
 };
 
 class InkbirdTempSensor : public HomekitRemoteDevice {
   BLEScan* pBLEScan;
-  InkbirdTempGetter *tempGetter;
+  InkbirdTempGetter *tempGetter = NULL;
   WebSocketsClient *webSocket;
   long lastScan = -1 * IB_SCAN_INTERVAL + 60000; // wait 1 minute before first scan
   bool scanning = false;
 
+  void onScanEnd(BLEScanResults results) {
+    HK_INFO_LINE("BLE scan ended.");
+    if (!tempGetter->foundTemp) {
+      HK_ERROR_LINE("Could not find Inkbird device.");
+    }
+    endScan();
+  }
+
   void startScan() {
     HK_INFO_LINE("Starting BLE scan for %i seconds.", IB_SCAN_TIME);
-    BLEDevice::init("");
     pBLEScan = BLEDevice::getScan(); //create new scan
     tempGetter = new InkbirdTempGetter();
     pBLEScan->setAdvertisedDeviceCallbacks(tempGetter);
     pBLEScan->setActiveScan(true); 
     pBLEScan->setInterval(100);
     pBLEScan->setWindow(99);
-    pBLEScan->start(IB_SCAN_TIME, [](BLEScanResults){}, false);
-    scanning = true;
+    scanning = pBLEScan->start(IB_SCAN_TIME, [](BLEScanResults){}, false); // need callback for async
+    lastScan = millis();
   }
 
   void endScan() {
     HK_INFO_LINE("Stopping BLE scan.");
+    pBLEScan->stop();
     pBLEScan->clearResults();
-    delete tempGetter;
-    BLEDevice::deinit(true);
+    if (tempGetter != NULL) {
+      delete tempGetter;
+      tempGetter = NULL;
+    }
     scanning = false;
     lastScan = millis();
   }
@@ -76,21 +85,26 @@ class InkbirdTempSensor : public HomekitRemoteDevice {
 public:
   InkbirdTempSensor(WebSocketsClient *ws) : HomekitRemoteDevice(ws, IB_DEVICE_ID) {
     HK_INFO_LINE("Created InkbirdTempSensor");
+    BLEDevice::init(IB_DEVICE_ID " HKR");
   }
 
   void loop() {
     long now = millis();
+    long diff = max(now, lastScan) - min(now, lastScan);
 
     if (!scanning) {
-      long diff = max(now, lastScan) - min(now, lastScan);
-      if (diff >= IB_SCAN_INTERVAL) startScan();
-      else if (now % 60000 == 0) {
+      if (diff >= IB_SCAN_INTERVAL) {
+        startScan();
+      } else if (now % 60000 == 0) {
         HK_INFO_LINE("Waiting %i minutes to scan again.", (IB_SCAN_INTERVAL - diff) / 60000);
         delay(10);
       }
     } else {
       if (tempGetter->foundTemp) {
         updateHomekitTemp();
+        endScan();
+      } else if (diff >= IB_SCAN_TIME * 1000) {
+        HK_ERROR_LINE("Inkbird BLE scan timed out.");
         endScan();
       } else if (now % 1000 == 0) {
         HK_INFO_LINE("Scanning...");
