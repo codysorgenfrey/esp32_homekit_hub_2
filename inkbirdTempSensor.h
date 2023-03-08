@@ -33,7 +33,7 @@ class InkbirdTempSensor : public HomekitRemoteDevice {
   BLEScan* pBLEScan;
   InkbirdTempGetter *tempGetter = NULL;
   WebSocketsClient *webSocket;
-  long lastScan = -1 * IB_SCAN_INTERVAL + 60000; // wait 1 minute before first scan
+  long lastScan = 0; 
   bool scanning = false;
 
   void onScanEnd(BLEScanResults results) {
@@ -83,9 +83,16 @@ class InkbirdTempSensor : public HomekitRemoteDevice {
   }
 
 public:
-  InkbirdTempSensor(WebSocketsClient *ws) : HomekitRemoteDevice(ws, IB_DEVICE_ID) {
+  InkbirdTempSensor(WebSocketsClient *ws) : HomekitRemoteDevice() {
     HK_INFO_LINE("Created InkbirdTempSensor");
     BLEDevice::init(IB_DEVICE_ID " HKR");
+    registerHKRDevice(
+      ws,
+      IB_DEVICE_ID,
+      [this](bool success){
+        if (success) startScan(); // initial scan
+        else HK_ERROR_LINE("Error registering InkbirdTempSensor with HKR.");
+    });
   }
 
   void loop() {
